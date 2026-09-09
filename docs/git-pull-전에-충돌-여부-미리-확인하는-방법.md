@@ -1,0 +1,356 @@
+---
+title: "[Git] Pull 전에 충돌 여부 미리 확인하는 방법"
+parent: "Git"
+nav_order: 3
+permalink: "/notes/git-pull-전에-충돌-여부-미리-확인하는-방법/"
+---
+
+Git에서 다른 브랜치의 변경사항을 가져오기 전에, **현재 브랜치와 충돌이 발생할지 미리 확인하고 싶은 경우**가 있다.
+
+특히 작업 중인 변경사항이 많거나, 운영·배포 브랜치처럼 실제 병합 전에 영향을 정확히 확인해야 하는 상황이라면 무작정 `git pull`부터 실행하는 것은 부담스럽다.
+
+이 글에서는 현재 작업 브랜치를 직접 변경하지 않고 충돌 가능성을 확인하는 방법과, Git 버전 또는 병합 방식에 따른 대체 방법을 정리한다.
+
+### 결론부터 말하면
+
+원격 브랜치의 최신 정보만 먼저 가져온 뒤 `git merge-tree`를 사용하면, 실제 병합 없이 충돌 여부를 검사할 수 있다.
+
+{% raw %}
+```bash
+git fetch origin
+git merge-tree --write-tree HEAD origin/dev
+```
+{% endraw %}
+
+위 예시는 현재 체크아웃된 브랜치와 원격의 `dev` 브랜치를 병합할 때 충돌이 발생하는지 확인한다.
+
+핵심은 다음과 같다.
+
+- `git fetch`는 원격 정보를 갱신하지만 현재 작업 브랜치를 변경하지 않는다.
+
+- `git merge-tree --write-tree`는 실제 merge commit을 만들지 않고 병합 결과를 계산한다.
+
+- 작업 디렉터리와 인덱스를 건드리지 않으므로 비교적 안전하다.
+
+### 왜 `git pull`을 바로 실행하면 안 될까?
+
+`git pull`은 일반적으로 다음 두 작업을 연속으로 수행한다.
+
+{% raw %}
+```bash
+git fetch
+git merge
+```
+{% endraw %}
+
+설정에 따라 merge 대신 rebase를 수행할 수도 있다.
+
+즉, `git pull`을 실행하면 원격 정보만 확인하는 것이 아니라 실제로 현재 브랜치에 변경사항을 반영하려고 시도한다. 충돌이 발생하면 작업 디렉터리에 충돌 상태가 남고, 이를 해결하거나 중단해야 한다.
+
+반면 `git fetch`는 원격 추적 브랜치만 최신 상태로 갱신한다.
+
+{% raw %}
+```bash
+git fetch origin
+```
+{% endraw %}
+
+이 명령만으로는 현재 브랜치의 파일이나 커밋이 변경되지 않는다. 따라서 사전 점검을 위해서는 먼저 `fetch`만 실행하는 방식이 안전하다.
+
+### 실제 충돌 여부 확인하기
+
+현재 브랜치와 원격 `dev` 브랜치를 비교하려면 다음과 같이 실행한다.
+
+{% raw %}
+```bash
+git fetch origin
+git merge-tree --write-tree HEAD origin/dev
+```
+{% endraw %}
+
+여기서 각 값의 의미는 다음과 같다.
+
+- `HEAD`: 현재 체크아웃된 브랜치의 최신 커밋
+
+- `origin/dev`: 원격 저장소의 `dev` 브랜치 최신 상태
+
+- `--write-tree`: 병합 결과 트리를 계산하고 충돌 여부를 반환
+
+충돌이 없으면 병합 결과에 해당하는 tree 객체 ID가 출력된다.
+
+{% raw %}
+```text
+7fd98f5d9c2f...
+```
+{% endraw %}
+
+충돌이 있다면 충돌 파일과 관련된 메시지가 출력된다.
+
+{% raw %}
+```text
+CONFLICT (content): Merge conflict in src/main/java/Example.java
+```
+{% endraw %}
+
+### 종료 코드로 판단하기
+
+`git merge-tree --write-tree`는 명령 종료 코드를 통해 충돌 여부를 구분할 수 있다.
+
+- 종료 코드 `0`: 충돌 없이 병합 가능
+
+- 종료 코드 `1`: 충돌 발생
+
+#### Linux 또는 macOS
+
+{% raw %}
+```bash
+git merge-tree --write-tree HEAD origin/dev
+echo $?
+```
+{% endraw %}
+
+한 번에 결과를 출력하려면 다음처럼 작성할 수 있다.
+
+{% raw %}
+```bash
+git merge-tree --write-tree HEAD origin/dev \
+  && echo "충돌 없음" \
+  || echo "충돌 발생"
+```
+{% endraw %}
+
+#### Windows PowerShell
+
+{% raw %}
+```powershell
+git merge-tree --write-tree HEAD origin/dev
+$LASTEXITCODE
+```
+{% endraw %}
+
+메시지까지 출력하려면 다음과 같이 사용할 수 있다.
+
+{% raw %}
+```powershell
+git merge-tree --write-tree HEAD origin/dev
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "충돌 없음"
+} else {
+    Write-Host "충돌 발생"
+}
+```
+{% endraw %}
+
+### 원하는 두 브랜치를 직접 비교하기
+
+현재 브랜치가 아닌 두 브랜치 간 충돌 여부도 확인할 수 있다.
+
+예를 들어 원격 `dev`와 `master`를 비교하려면 다음과 같이 실행한다.
+
+{% raw %}
+```bash
+git fetch origin
+git merge-tree --write-tree origin/master origin/dev
+```
+{% endraw %}
+
+이 방식은 배포 전에 `dev`를 `master`에 병합할 수 있는지 검사하거나, PR 생성 전에 대상 브랜치와의 충돌 여부를 확인할 때 유용하다.
+
+### `merge-tree --write-tree`를 사용할 수 없는 경우
+
+Git 버전에 따라 `--write-tree` 옵션이 지원되지 않을 수 있다.
+
+먼저 Git 버전을 확인한다.
+
+{% raw %}
+```bash
+git --version
+```
+{% endraw %}
+
+해당 옵션을 사용할 수 없다면 실제 merge를 실행하되 커밋은 생성하지 않는 방식으로 확인할 수 있다.
+
+{% raw %}
+```bash
+git fetch origin
+git merge --no-commit --no-ff origin/dev
+```
+{% endraw %}
+
+충돌 여부를 확인한 후 병합을 취소한다.
+
+{% raw %}
+```bash
+git merge --abort
+```
+{% endraw %}
+
+다만 이 방식은 실제로 작업 디렉터리와 인덱스를 변경한다. 따라서 커밋되지 않은 변경사항이 남아 있는 상태에서는 권장하지 않는다.
+
+실행 전에는 최소한 다음 명령으로 작업 상태를 확인하는 것이 좋다.
+
+{% raw %}
+```bash
+git status
+```
+{% endraw %}
+
+### 더 안전하게 확인하려면 `git worktree` 사용
+
+구버전 Git을 사용하거나 실제 merge 결과를 확실하게 확인해야 한다면 임시 worktree를 만드는 방법이 가장 안전하다.
+
+{% raw %}
+```bash
+git fetch origin
+git worktree add ../merge-check HEAD
+cd ../merge-check
+git merge --no-commit --no-ff origin/dev
+```
+{% endraw %}
+
+이렇게 하면 현재 작업 폴더는 그대로 유지되고, 별도의 디렉터리에서 병합 테스트가 수행된다.
+
+확인이 끝나면 다음과 같이 정리한다.
+
+{% raw %}
+```bash
+git merge --abort
+cd ../원래저장소
+git worktree remove ../merge-check
+```
+{% endraw %}
+
+충돌이 발생하지 않아 `git merge --abort`가 동작하지 않는 경우에는 해당 명령을 생략하고 worktree만 제거하면 된다.
+
+### Pull이 rebase 방식이라면 주의
+
+Git 설정에 따라 `git pull`이 merge가 아니라 rebase로 동작할 수 있다.
+
+현재 설정은 다음 명령으로 확인할 수 있다.
+
+{% raw %}
+```bash
+git config --get pull.rebase
+```
+{% endraw %}
+
+또는 전체 설정에서 확인할 수 있다.
+
+{% raw %}
+```bash
+git config --list | grep pull.rebase
+```
+{% endraw %}
+
+`pull.rebase=true`라면 실제 pull 동작은 대략 다음과 유사하다.
+
+{% raw %}
+```bash
+git fetch origin
+git rebase origin/dev
+```
+{% endraw %}
+
+merge와 rebase는 커밋을 적용하는 방식이 다르므로, merge 기준으로는 충돌이 없더라도 rebase 중 특정 커밋에서 충돌이 발생할 수 있다.
+
+rebase 충돌 여부를 정확히 확인하려면 임시 worktree에서 테스트하는 편이 좋다.
+
+{% raw %}
+```bash
+git fetch origin
+git worktree add ../rebase-check HEAD
+cd ../rebase-check
+git rebase origin/dev
+```
+{% endraw %}
+
+확인 후 rebase가 진행 중이라면 중단한다.
+
+{% raw %}
+```bash
+git rebase --abort
+```
+{% endraw %}
+
+그리고 worktree를 제거한다.
+
+{% raw %}
+```bash
+cd ../원래저장소
+git worktree remove ../rebase-check
+```
+{% endraw %}
+
+### 변경 파일만 먼저 살펴보기
+
+충돌 여부뿐 아니라 어떤 파일이 달라졌는지도 미리 확인하는 것이 좋다.
+
+{% raw %}
+```bash
+git fetch origin
+git diff --name-status HEAD..origin/dev
+```
+{% endraw %}
+
+실제 코드 차이를 확인하려면 다음 명령을 사용한다.
+
+{% raw %}
+```bash
+git diff HEAD..origin/dev
+```
+{% endraw %}
+
+커밋 목록만 보고 싶다면 다음과 같이 확인한다.
+
+{% raw %}
+```bash
+git log --oneline --graph HEAD..origin/dev
+```
+{% endraw %}
+
+단, `git diff`에서 같은 파일이 변경되었다고 표시된다고 해서 반드시 충돌하는 것은 아니다. Git은 같은 파일이라도 서로 다른 줄이나 문맥을 수정했다면 자동으로 병합할 수 있다.
+
+따라서 파일 변경 여부는 참고용이고, 실제 충돌 판단은 `git merge-tree` 또는 테스트 merge를 통해 확인해야 한다.
+
+### 실무에서 추천하는 절차
+
+지원되는 Git 버전을 사용하고 있다면 다음 절차가 가장 간단하다.
+
+{% raw %}
+```bash
+git status
+git fetch origin
+git diff --name-status HEAD..origin/dev
+git merge-tree --write-tree HEAD origin/dev
+```
+{% endraw %}
+
+정리하면 다음 순서다.
+
+1. 현재 작업 상태를 확인한다.
+
+1. `fetch`로 원격 정보만 갱신한다.
+
+1. 변경 파일을 확인한다.
+
+1. `merge-tree`로 실제 충돌 여부를 검사한다.
+
+1. 문제가 없을 때만 pull 또는 merge를 진행한다.
+
+### 마무리
+
+다른 브랜치의 내용을 가져오기 전에 충돌 여부를 미리 확인하려면, 무작정 `git pull`을 실행하기보다 `fetch`와 `merge-tree`를 분리해서 사용하는 것이 안전하다.
+
+가장 추천하는 명령은 다음 두 줄이다.
+
+{% raw %}
+```bash
+git fetch origin
+git merge-tree --write-tree HEAD origin/dev
+```
+{% endraw %}
+
+구버전 Git이거나 rebase 기반 pull을 사용한다면 임시 worktree에서 실제 merge 또는 rebase를 수행해 보는 것이 정확하다.
+
+이 방식을 익혀두면 배포 브랜치 병합, PR 사전 점검, 장기간 작업 브랜치 동기화처럼 충돌 가능성이 높은 상황에서도 현재 작업 환경을 건드리지 않고 안전하게 확인할 수 있다.
