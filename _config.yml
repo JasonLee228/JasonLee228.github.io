@@ -8,10 +8,12 @@ url: https://jasonlee228.github.io
 # just-the-docs options
 search_enabled: true
 search:
-  # Split on whitespace/dashes AND between adjacent Hangul syllables so Korean
-  # queries like "정렬" match tokens such as "정렬을"/"정렬의". lunr's default
-  # tokenizer only splits on whitespace, which breaks CJK search.
-  tokenizer_separator: /[\s\-/]+|(?<=[가-힣])(?=[가-힣])/
+  # Also split tokens on punctuation/brackets so Korean text glued to Latin by
+  # a paren (e.g. "정렬(insertion") is separated into searchable words. Paired
+  # with a Hangul-preserving trimmer in _includes/head_custom.html, this makes
+  # Korean queries like "정렬" match tokens such as "정렬을" via trailing
+  # wildcard. lunr's default tokenizer only splits on whitespace/-/ .
+  tokenizer_separator: '/[\s\-\/(),.:;!?~|<>\[\]{}·]+/'
 heading_anchors: true
 color_scheme: light
 
