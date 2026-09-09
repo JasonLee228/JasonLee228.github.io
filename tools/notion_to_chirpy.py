@@ -101,7 +101,8 @@ def main():
         if not body:
             body = child_index(pid)
         if not body:
-            continue  # empty leaf, nothing to publish
+            # Keep a stub so internal page-mention links stay valid.
+            body = "_(내용 없음)_"
         cats, tags = categories_tags(pid)
         dt = created_dt(pid)
         fm = ["---", "title: " + yaml_q(N.raw_title(pid)),
