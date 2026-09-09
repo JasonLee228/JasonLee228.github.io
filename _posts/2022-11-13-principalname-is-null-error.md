@@ -1,7 +1,8 @@
 ---
 title: "principalName is null error"
 date: 2022-11-13 13:36:22 +0000
-categories: ["기타", "SPOTY-PROJECT(종료)"]
+categories: ["프로젝트", "SPOTY"]
+tags: ["spoty", "프로젝트"]
 ---
 
 계속 principalName is null 오류 발생,,,,

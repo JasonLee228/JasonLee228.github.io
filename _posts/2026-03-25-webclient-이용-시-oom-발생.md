@@ -1,7 +1,8 @@
 ---
 title: "WebClient 이용 시 OOM 발생"
 date: 2026-03-25 11:34:26 +0000
-categories: ["Spring-Boot"]
+categories: ["Spring", "운영"]
+tags: ["운영", "spring"]
 ---
 
 ### 현상

@@ -1,14 +1,15 @@
 ---
 title: "07. Write, Update, Delete, Bulk"
 date: 2026-05-20 02:59:25 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [06. Query, Search, Pagination](/posts/06-query-search-pagination/)
 >
@@ -543,7 +544,7 @@ request.setRefresh(true);
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [06. Query, Search, Pagination](/posts/06-query-search-pagination/)
 >

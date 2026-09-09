@@ -1,7 +1,8 @@
 ---
 title: "@Builder, ObjectMapper 역직렬화에서 같은 기본값 사용하기"
 date: 2026-03-26 01:49:24 +0000
-categories: ["Spring-Boot"]
+categories: ["Spring", "활용"]
+tags: ["활용", "spring"]
 ---
 
 ### 기본값 설정 방법

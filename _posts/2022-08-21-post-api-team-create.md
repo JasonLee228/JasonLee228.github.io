@@ -1,8 +1,8 @@
 ---
 title: "[POST] api/team/create"
 date: 2022-08-21 12:31:00 +0000
-categories: ["기타", "SPOTY-PROJECT(종료)"]
-tags: ["API 명세서", "TEAM-API"]
+categories: ["프로젝트", "SPOTY"]
+tags: ["spoty", "프로젝트"]
 ---
 
 #### /team/create

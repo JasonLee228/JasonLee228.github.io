@@ -1,0 +1,97 @@
+---
+layout: page
+# All the Categories of posts — list documents on expand, even without a 2nd level.
+---
+
+{% include lang.html %}
+
+{% assign HEAD_PREFIX = 'h_' %}
+{% assign LIST_PREFIX = 'l_' %}
+{% assign group_index = 0 %}
+{% assign sort_categories = site.categories | sort %}
+
+{% for category in sort_categories %}
+  {% assign category_name = category | first %}
+  {% assign posts_of_category = category | last %}
+  {% assign first_post = posts_of_category | first %}
+
+  {% if category_name == first_post.categories[0] %}
+    {% assign sub_categories = '' | split: '' %}
+    {% for post in posts_of_category %}
+      {% assign second_category = post.categories[1] %}
+      {% if second_category %}
+        {% unless sub_categories contains second_category %}
+          {% assign sub_categories = sub_categories | push: second_category %}
+        {% endunless %}
+      {% endif %}
+    {% endfor %}
+    {% assign sub_categories = sub_categories | sort %}
+    {% assign sub_categories_size = sub_categories | size %}
+    {% assign top_posts_size = posts_of_category | size %}
+
+    <div class="card categories">
+      <details class="category-details">
+      <summary
+        id="{{ HEAD_PREFIX }}{{ group_index }}"
+        class="card-header d-flex justify-content-between hide-border-bottom category-summary"
+      >
+        <span class="ms-2">
+          <i class="far fa-folder-open fa-fw"></i>
+          {% capture _category_url %}/categories/{{ category_name | slugify | url_encode }}/{% endcapture %}
+          <a href="{{ _category_url | relative_url }}" class="mx-2" onclick="event.stopPropagation()">{{ category_name }}</a>
+          <span class="text-muted small font-weight-light">
+            {% if sub_categories_size > 0 %}
+              {{ sub_categories_size }}
+              {% if sub_categories_size > 1 %}
+                {{ site.data.locales[lang].categories.category_measure.plural | default: site.data.locales[lang].categories.category_measure }}
+              {% else %}
+                {{ site.data.locales[lang].categories.category_measure.singular | default: site.data.locales[lang].categories.category_measure }}
+              {% endif %},
+            {% endif %}
+            {{ top_posts_size }}
+            {% if top_posts_size > 1 %}
+              {{ site.data.locales[lang].categories.post_measure.plural | default: site.data.locales[lang].categories.post_measure }}
+            {% else %}
+              {{ site.data.locales[lang].categories.post_measure.singular | default: site.data.locales[lang].categories.post_measure }}
+            {% endif %}
+          </span>
+        </span>
+        <span class="category-trigger hide-border-bottom" aria-hidden="true">
+          <i class="fas fa-fw fa-angle-right"></i>
+        </span>
+      </summary>
+
+      <div id="{{ LIST_PREFIX }}{{ group_index }}">
+        <ul class="list-group">
+          {% if sub_categories_size > 0 %}
+            {% for sub_category in sub_categories %}
+              <li class="list-group-item">
+                <i class="far fa-folder fa-fw"></i>
+                {% capture _sub_ctg_url %}/categories/{{ sub_category | slugify | url_encode }}/{% endcapture %}
+                <a href="{{ _sub_ctg_url | relative_url }}" class="mx-2">{{ sub_category }}</a>
+                <ul class="list-unstyled ms-4 mt-2 mb-1">
+                  {% for post in posts_of_category %}
+                    {% if post.categories[1] == sub_category %}
+                      <li class="mb-1">
+                        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+          {% else %}
+            {% for post in posts_of_category %}
+              <li class="list-group-item">
+                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+      </details>
+    </div>
+
+    {% assign group_index = group_index | plus: 1 %}
+  {% endif %}
+{% endfor %}

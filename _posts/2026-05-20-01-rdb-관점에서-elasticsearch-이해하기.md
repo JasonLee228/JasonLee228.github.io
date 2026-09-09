@@ -1,14 +1,15 @@
 ---
 title: "01. RDB 관점에서 Elasticsearch 이해하기"
 date: 2026-05-20 02:58:06 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [00. Elasticsearch 교육 문서 목차](/posts/00-elasticsearch-교육-문서-목차/)
 >
@@ -122,7 +123,7 @@ public Docs create(String companyId, CreateDocsRequest request) {
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [00. Elasticsearch 교육 문서 목차](/posts/00-elasticsearch-교육-문서-목차/)
 >

@@ -1,7 +1,8 @@
 ---
 title: "Java Files.createDirectory, createDirectories 의 차이"
 date: 2024-05-02 02:54:25 +0000
-categories: ["Java"]
+categories: ["Java", "문법"]
+tags: ["문법", "java"]
 ---
 
 `Files.createDirectory()` 및 `Files.createDirectories()` 메서드는 모두 디렉터리를 생성하는데 사용되는 Java의 메서드입니다. 그러나 두 메서드 간에는 중요한 차이가 있습니다.

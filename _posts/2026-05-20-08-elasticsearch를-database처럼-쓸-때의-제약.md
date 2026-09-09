@@ -1,14 +1,15 @@
 ---
 title: "08. Elasticsearch를 Database처럼 쓸 때의 제약"
 date: 2026-05-20 02:59:25 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "운영"]
+tags: ["운영", "elasticsearch"]
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [07. Write, Update, Delete, Bulk](/posts/07-write-update-delete-bulk/)
 >
@@ -142,7 +143,7 @@ MVP는 일반 단건 write에 `wait_for`를 사용해 read-after-write 경험을
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [07. Write, Update, Delete, Bulk](/posts/07-write-update-delete-bulk/)
 >

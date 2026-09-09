@@ -1,7 +1,8 @@
 ---
 title: "Java String.isEmpty, isBlank 의 차이점"
 date: 2024-05-28 02:55:39 +0000
-categories: ["Java"]
+categories: ["Java", "문법"]
+tags: ["문법", "java"]
 ---
 
 Java에서 `String.isEmpty()`와 `String.isBlank()`는 문자열이 비어있는지 또는 공백인지 확인하는 데 사용되는 메서드입니다. 이 두 메서드는 문자열의 상태를 검사하는데, 각각 다른 방식으로 동작합니다. 아래에서 그 차이점을 설명하겠습니다.

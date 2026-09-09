@@ -1,14 +1,15 @@
 ---
 title: "02. Cluster, Index, Shard, Replica"
 date: 2026-05-20 02:58:06 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [01. RDB 관점에서 Elasticsearch 이해하기](/posts/01-rdb-관점에서-elasticsearch-이해하기/)
 >
@@ -120,7 +121,7 @@ Tenant index 전략은 격리와 삭제가 단순해지는 장점이 있다. 하
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [01. RDB 관점에서 Elasticsearch 이해하기](/posts/01-rdb-관점에서-elasticsearch-이해하기/)
 >
