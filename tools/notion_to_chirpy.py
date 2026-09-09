@@ -83,6 +83,52 @@ def child_index(pid):
     return "\n".join(lines)
 
 
+def _html_escape(s):
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            .replace('"', "&quot;"))
+
+
+def _node_html(pid, depth):
+    title = _html_escape(N.raw_title(pid))
+    link = f'<a href="{chirpy_permalink(pid)}">{title}</a>'
+    kids = N.tree.get(pid, {}).get("children", [])
+    if not kids:
+        return f"<li>{link}</li>"
+    inner = "".join(_node_html(c, depth + 1) for c in kids)
+    opened = " open" if depth == 0 else ""
+    return (f"<li><details{opened}><summary>{link}</summary>"
+            f"<ul>{inner}</ul></details></li>")
+
+
+def write_toc_tab():
+    top = N.tree.get(N.ROOT_ID, {}).get("children", [])
+    items = "".join(_node_html(pid, 0) for pid in top)
+    page = f"""---
+title: 목차
+icon: fas fa-sitemap
+order: 1
+---
+
+전체 노트를 Notion과 동일한 계층 구조로 정리했습니다. 카테고리를 눌러 펼치거나
+접을 수 있고, 항목을 클릭하면 해당 글로 이동합니다.
+
+<style>
+.notion-tree, .notion-tree ul {{ list-style: none; padding-left: 1.1rem; }}
+.notion-tree > li {{ margin: .15rem 0; }}
+.notion-tree summary {{ cursor: pointer; }}
+.notion-tree summary::marker {{ color: var(--text-muted-color); }}
+.notion-tree a {{ text-decoration: none; }}
+</style>
+
+<ul class="notion-tree">
+{items}
+</ul>
+"""
+    with open(os.path.join(ROOT_DIR, "_tabs", "toc.md"), "w") as fh:
+        fh.write(page)
+    print("wrote _tabs/toc.md")
+
+
 def main():
     if os.path.isdir(POSTS):
         for f in glob.glob(os.path.join(POSTS, "*.md")):
@@ -122,6 +168,7 @@ def main():
             fh.write("\n".join(fm) + "\n\n" + body + "\n")
         count += 1
     print(f"wrote {count} Chirpy posts")
+    write_toc_tab()
 
 
 if __name__ == "__main__":
