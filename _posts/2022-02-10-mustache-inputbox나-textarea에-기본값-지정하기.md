@@ -3,6 +3,7 @@ title: "mustache, inputBox나 TextArea에 기본값 지정하기"
 date: 2022-02-10 10:50:43 +0000
 categories: ["Spring", "웹서비스"]
 tags: ["웹서비스", "spring"]
+permalink: /posts/mustache-inputbox나-textarea에-기본값-지정하기/
 ---
 
 > 💡 게시판을 구성하던 와중, 글쓴이를 사용자가 직접 구성하는 것이 아닌 기본적으로 로그인한 사용자의 이름을 가져와 넣어주면 어떨까 생각하게 되었다.

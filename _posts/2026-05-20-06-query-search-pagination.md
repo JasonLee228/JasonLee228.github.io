@@ -3,6 +3,7 @@ title: "06. Query, Search, Pagination"
 date: 2026-05-20 02:59:25 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/06-query-search-pagination/
 ---
 
 > 🧭 

@@ -3,6 +3,7 @@ title: "replace() / replaceAll()"
 date: 2021-07-16 06:21:22 +0000
 categories: ["Java", "문법"]
 tags: ["문법", "java"]
+permalink: /posts/replace-replaceall/
 ---
 
 replace(), replaceAll() 이 두 메소드는 문자열 내에서 원하는 문자열을 대체하는 기능으로 사용된다.

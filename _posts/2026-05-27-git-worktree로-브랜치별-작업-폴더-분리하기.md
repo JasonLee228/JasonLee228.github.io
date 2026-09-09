@@ -3,6 +3,7 @@ title: "git worktree로 브랜치별 작업 폴더 분리하기"
 date: 2026-05-27 04:55:02 +0000
 categories: ["Git", "워크플로"]
 tags: ["워크플로", "git"]
+permalink: /posts/git-worktree로-브랜치별-작업-폴더-분리하기/
 ---
 
 > 💡 

@@ -3,6 +3,7 @@ title: "퀵 정렬(Quick Sort)"
 date: 2021-07-23 02:43:29 +0000
 categories: ["알고리즘", "정렬"]
 tags: ["정렬", "알고리즘"]
+permalink: /posts/퀵-정렬quick-sort/
 ---
 
 **1. 퀵 정렬**  

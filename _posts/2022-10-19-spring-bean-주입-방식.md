@@ -3,6 +3,7 @@ title: "spring Bean 주입 방식"
 date: 2022-10-19 11:36:42 +0000
 categories: ["Spring", "활용"]
 tags: ["활용", "spring"]
+permalink: /posts/spring-bean-주입-방식/
 ---
 
 - 스프링에서 빈의 주입은 어떤 방식으로 이루어지는가?

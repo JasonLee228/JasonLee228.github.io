@@ -3,6 +3,7 @@ title: "새 코드 github repository와 연결하기"
 date: 2022-10-12 12:44:49 +0000
 categories: ["Git", "워크플로"]
 tags: ["워크플로", "git"]
+permalink: /posts/새-코드-github-repository와-연결하기/
 ---
 
 - 본 내용은 PC 에 git, git bash 가 설치되어 있다는 가정 하에 이루어집니다.

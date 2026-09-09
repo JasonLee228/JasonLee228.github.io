@@ -2,7 +2,8 @@
 title: "oauth2 - google 로그인"
 date: 2022-10-15 14:48:18 +0000
 categories: ["프로젝트", "SPOTY"]
-tags: ["spoty", "프로젝트", "spring", "oauth2"]
+tags: ["spoty", "프로젝트", "oauth2"]
+permalink: /posts/oauth2-google-로그인/
 ---
 
 #### 1. 구글 API 페이지 접속 

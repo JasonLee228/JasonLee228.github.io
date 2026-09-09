@@ -3,6 +3,7 @@ title: "boolean / Boolean"
 date: 2022-09-01 02:32:30 +0000
 categories: ["Java", "문법"]
 tags: ["문법", "java"]
+permalink: /posts/boolean-boolean/
 ---
 
 - boolean : 자료형(기본형 : primitive type)

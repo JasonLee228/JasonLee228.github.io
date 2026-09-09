@@ -3,6 +3,7 @@ title: "MockMvc를 사용하여 POST, GET요청 테스트하기"
 date: 2022-09-04 09:36:00 +0000
 categories: ["Spring", "테스트"]
 tags: ["테스트", "spring"]
+permalink: /posts/mockmvc를-사용하여-post-get요청-테스트하기/
 ---
 
 #### 1. MockMvc 란?

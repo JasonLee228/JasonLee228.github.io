@@ -3,6 +3,7 @@ title: "String, StringBuffer, StringBuilder"
 date: 2021-07-26 04:08:11 +0000
 categories: ["Java", "문법"]
 tags: ["문법", "java"]
+permalink: /posts/string-stringbuffer-stringbuilder/
 ---
 
 1. String, StringBuffer, StringBuilder의 차이점을 알아보자.

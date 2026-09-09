@@ -3,6 +3,7 @@ title: "05. Refresh, Near Real-Time, 검색 일관성"
 date: 2026-05-20 02:58:44 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/05-refresh-near-real-time-검색-일관성/
 ---
 
 > 🧭 

@@ -170,6 +170,7 @@ def main():
             continue
         v = N.BLOCKS.get(pid) or {}
         m["body"] = N.scrub_secrets(N.render_children(v)).strip()
+        m["title"] = T.display_title(m["title"], m["cats"][1], T.first_heading(m["body"]))
 
     used_names = set()
     count = 0
@@ -187,6 +188,8 @@ def main():
         ]
         if "\\(" in m["body"] or "$$" in m["body"]:
             fm.append("math: true")
+        if N.slugify(m["title"], "") != slug_of(pid):
+            fm.append("permalink: /posts/" + slug_of(pid) + "/")
         fm.append("---")
         name = f"{dt.strftime('%Y-%m-%d')}-{slug_of(pid)}.md"
         if name in used_names:

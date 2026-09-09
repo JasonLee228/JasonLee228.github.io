@@ -3,6 +3,7 @@ title: "07. Write, Update, Delete, Bulk"
 date: 2026-05-20 02:59:25 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/07-write-update-delete-bulk/
 ---
 
 > 🧭 

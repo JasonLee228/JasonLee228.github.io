@@ -1,8 +1,9 @@
 ---
-title: "saction 3. 서블릿, JSP, MVC 패턴"
+title: "스프링 MVC 3. 서블릿, JSP, MVC 패턴"
 date: 2023-03-21 13:35:08 +0000
 categories: ["Spring", "MVC"]
 tags: ["mvc", "spring"]
+permalink: /posts/saction-3-서블릿-jsp-mvc-패턴/
 ---
 
 #### 회원 관리 기능 - 요구사항

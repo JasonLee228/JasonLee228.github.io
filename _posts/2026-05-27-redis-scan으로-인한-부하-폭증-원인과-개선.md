@@ -3,6 +3,7 @@ title: "Redis SCAN으로 인한 부하 폭증 원인과 개선"
 date: 2026-05-27 01:01:46 +0000
 categories: ["Spring", "운영"]
 tags: ["운영", "spring", "redis"]
+permalink: /posts/redis-scan으로-인한-부하-폭증-원인과-개선/
 ---
 
 ## Redis SCAN 때문에 발생한 부하 폭증 정리

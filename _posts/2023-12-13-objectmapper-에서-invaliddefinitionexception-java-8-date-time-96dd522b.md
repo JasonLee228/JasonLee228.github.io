@@ -3,6 +3,7 @@ title: "ObjectMapper 에서 InvalidDefinitionException: Java 8 date/time type �
 date: 2023-12-13 06:38:27 +0000
 categories: ["Spring", "활용"]
 tags: ["활용", "java", "spring"]
+permalink: /posts/objectmapper-에서-invaliddefinitionexception-java-8-date-time-96dd522b/
 ---
 
 ObjectMapper 에서는 날짜 타입을 처리하기 위해 별도의 라이브러리를 포함해 주어야 하는데, jsr310 라이브러리가 바로 그것이다.

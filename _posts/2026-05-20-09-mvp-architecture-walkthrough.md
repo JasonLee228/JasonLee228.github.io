@@ -1,8 +1,9 @@
 ---
 title: "09. MVP Architecture Walkthrough"
 date: 2026-05-20 03:00:01 +0000
-categories: ["Elasticsearch", "운영"]
-tags: ["운영", "elasticsearch"]
+categories: ["Elasticsearch", "클러스터운영"]
+tags: ["클러스터운영", "elasticsearch"]
+permalink: /posts/09-mvp-architecture-walkthrough/
 ---
 
 > 🧭 

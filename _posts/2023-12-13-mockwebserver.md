@@ -3,6 +3,7 @@ title: "MockWebServer"
 date: 2023-12-13 04:48:20 +0000
 categories: ["Spring", "테스트"]
 tags: ["테스트", "spring"]
+permalink: /posts/mockwebserver/
 ---
 
 #### MockWebServer 란?

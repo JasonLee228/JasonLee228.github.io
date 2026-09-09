@@ -3,6 +3,7 @@ title: "[POST] api/team/create"
 date: 2022-08-21 12:31:00 +0000
 categories: ["프로젝트", "SPOTY"]
 tags: ["spoty", "프로젝트"]
+permalink: /posts/post-api-team-create/
 ---
 
 #### /team/create

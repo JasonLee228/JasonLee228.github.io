@@ -3,6 +3,7 @@ title: "Type definition error: [simple type, class …]"
 date: 2022-12-13 11:12:56 +0000
 categories: ["Spring", "활용"]
 tags: ["활용", "spring"]
+permalink: /posts/type-definition-error-simple-type-class/
 ---
 
 > 💡 프로젝트에서 API 요청을 보낼 때 났던 에러. 

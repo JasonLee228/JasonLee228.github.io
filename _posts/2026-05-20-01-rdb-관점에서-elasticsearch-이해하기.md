@@ -3,6 +3,7 @@ title: "01. RDB 관점에서 Elasticsearch 이해하기"
 date: 2026-05-20 02:58:06 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/01-rdb-관점에서-elasticsearch-이해하기/
 ---
 
 > 🧭 

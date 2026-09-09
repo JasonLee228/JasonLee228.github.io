@@ -1,8 +1,9 @@
 ---
 title: "assertj method"
 date: 2023-01-16 00:55:27 +0000
-categories: ["Java", "테스트"]
-tags: ["테스트", "java"]
+categories: ["Java", "단위테스트"]
+tags: ["단위테스트", "java"]
+permalink: /posts/assertj-method/
 ---
 
 |   |   |

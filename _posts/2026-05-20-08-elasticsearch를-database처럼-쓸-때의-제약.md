@@ -1,8 +1,9 @@
 ---
 title: "08. Elasticsearch를 Database처럼 쓸 때의 제약"
 date: 2026-05-20 02:59:25 +0000
-categories: ["Elasticsearch", "운영"]
-tags: ["운영", "elasticsearch"]
+categories: ["Elasticsearch", "클러스터운영"]
+tags: ["클러스터운영", "elasticsearch"]
+permalink: /posts/08-elasticsearch를-database처럼-쓸-때의-제약/
 ---
 
 > 🧭 

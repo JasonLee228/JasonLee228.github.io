@@ -3,6 +3,7 @@ title: "Scanner, BufferedReader(Java입력)"
 date: 2021-08-06 01:37:40 +0000
 categories: ["Java", "입출력"]
 tags: ["입출력", "java"]
+permalink: /posts/scanner-bufferedreaderjava입력/
 ---
 
 1. Scanner

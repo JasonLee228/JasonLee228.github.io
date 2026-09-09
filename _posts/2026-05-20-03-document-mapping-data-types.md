@@ -3,6 +3,7 @@ title: "03. Document, Mapping, Data Types"
 date: 2026-05-20 02:58:44 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/03-document-mapping-data-types/
 ---
 
 > 🧭 

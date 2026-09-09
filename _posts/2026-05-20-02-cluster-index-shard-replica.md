@@ -3,6 +3,7 @@ title: "02. Cluster, Index, Shard, Replica"
 date: 2026-05-20 02:58:06 +0000
 categories: ["Elasticsearch", "기초"]
 tags: ["기초", "elasticsearch"]
+permalink: /posts/02-cluster-index-shard-replica/
 ---
 
 > 🧭 

@@ -33,6 +33,24 @@ COURSE = [
     ("취미", ("기타", "취미")),
 ]
 
+# Chirpy category archives are flat. Same secondary under two primaries
+# would share one /categories/:name/ page — uniquify the collisions only.
+UNIQUE_SEC = {
+    ("C++", "문법"): "C++문법",
+    ("Java", "테스트"): "단위테스트",
+    ("Elasticsearch", "운영"): "클러스터운영",
+}
+
+SKIP_TITLES = {"외부사이트"}
+
+COURSE_LABEL = {
+    "MVC": "스프링 MVC",
+    "핵심원리": "스프링 핵심원리",
+    "JPA": "스프링 JPA",
+}
+
+SECTION_RE = re.compile(r"^[Ss]action\s+(\d+)\s*[).\-–]?\s*(.*)$")
+
 TITLE_SECONDARY = [
     (r"정렬|sort", "정렬"),
     (r"제네릭|컬렉션", "컬렉션"),
@@ -70,6 +88,39 @@ def _norm(s):
     return re.sub(r"\s+", " ", (s or "")).strip()
 
 
+def uniquify(primary, secondary):
+    return primary, UNIQUE_SEC.get((primary, secondary), secondary)
+
+
+def first_heading(body):
+    if not body:
+        return ""
+    for m in re.finditer(r"^(#{2,4})\s+(.*)$", body, re.M):
+        text = re.sub(r"^#+\s*", "", m.group(2)).strip(" #")
+        if text:
+            return text
+    return ""
+
+
+def display_title(title, secondary=None, heading=""):
+    """Turn Notion 'saction N' stubs into a readable lecture title."""
+    t = clean_title(title)
+    m = SECTION_RE.match(t)
+    if not m:
+        return t
+    num, rest = m.group(1), (m.group(2) or "").strip(" -")
+    if not rest:
+        rest = (heading or "").strip()
+    label = COURSE_LABEL.get(secondary or "")
+    if label and rest:
+        return f"{label} {num}. {rest}"
+    if label:
+        return f"{label} {num}"
+    if rest:
+        return f"{num}. {rest}"
+    return t
+
+
 def classify(path_titles, title, has_children, has_body):
     """Return (primary, secondary, tags) or None to skip publishing."""
     # Folders stay in the tree as categories, never as posts.
@@ -80,6 +131,8 @@ def classify(path_titles, title, has_children, has_body):
 
     titles = [_norm(t) for t in path_titles if t]
     raw_title = _norm(title)
+    if raw_title in SKIP_TITLES:
+        return None
     blob = " ".join(titles + [raw_title]).lower()
 
     primary, secondary = "기타", "메모"
@@ -92,8 +145,13 @@ def classify(path_titles, title, has_children, has_body):
             primary, secondary = pair
             break
 
+    if "콘솔만을 이용한 게시판" in raw_title:
+        primary, secondary = "Java", "실습"
+
     # Title hints only refine default/generic secondaries, not 백준/코스 등.
-    if (primary == "Java") or (primary == "C++") or (primary == "Spring" and secondary == "활용"):
+    if (primary == "Java" and secondary != "실습") or (primary == "C++") or (
+        primary == "Spring" and secondary == "활용"
+    ):
         for pat, sec in TITLE_SECONDARY:
             if re.search(pat, raw_title, re.I):
                 secondary = sec
@@ -105,6 +163,7 @@ def classify(path_titles, title, has_children, has_body):
         else:
             secondary = "기초"
 
+    primary, secondary = uniquify(primary, secondary)
     tags = _tags(primary, secondary, blob, raw_title)
     return primary, secondary, tags
 
