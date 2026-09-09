@@ -31,5 +31,8 @@ assert T.display_title("saction 4 - 스프링 컨테이너와 스프링 빈", "�
 assert T.display_title("Saction 3) 영속성 관리 - 내부 동작 방식", "JPA") == (
     "스프링 JPA 3. 영속성 관리 - 내부 동작 방식")
 assert T.first_heading("## # 웹 애플리케이션 이해\n\n본문") == "웹 애플리케이션 이해"
+assert T.cat_slug("C++") == "c"
+assert T.cat_slug("C++문법") == "c-문법"
+assert T.cat_url("단위테스트") == "/categories/단위테스트/"
 
 print("taxonomy_check: ok")

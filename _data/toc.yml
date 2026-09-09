@@ -4,7 +4,7 @@
   url: "/categories/c/"
   children:
   - title: "C++문법"
-    url: "/categories/c문법/"
+    url: "/categories/c-문법/"
     children:
     - title: "cin도 표현식 형태를 가질 수 있다?"
       url: "/posts/cin도-표현식-형태를-가질-수-있다/"

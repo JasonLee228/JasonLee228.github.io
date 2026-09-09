@@ -34,9 +34,7 @@ def slug_of(pid):
 
 
 def cat_url(name):
-    slug = re.sub(r"[^\w가-힣+]+", "-", name.lower()).strip("-")
-    slug = slug.replace("+", "")  # jekyll slugify drops '+'
-    return f"/categories/{slug}/"
+    return T.cat_url(name)
 
 
 def chirpy_permalink(pid):

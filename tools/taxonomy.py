@@ -92,6 +92,16 @@ def uniquify(primary, secondary):
     return primary, UNIQUE_SEC.get((primary, secondary), secondary)
 
 
+def cat_slug(name):
+    """Match Chirpy/Jekyll slugify: C++ → c, C++문법 → c-문법."""
+    slug = re.sub(r"[^\w]+", "-", (name or "").lower())
+    return re.sub(r"-{2,}", "-", slug).strip("-")
+
+
+def cat_url(name):
+    return f"/categories/{cat_slug(name)}/"
+
+
 def first_heading(body):
     if not body:
         return ""
