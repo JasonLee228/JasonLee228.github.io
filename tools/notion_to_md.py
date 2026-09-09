@@ -64,6 +64,11 @@ def short(pid):
     return pid.replace("-", "")[:8]
 
 
+def dash(uuid_no_dash):
+    s = uuid_no_dash.replace("-", "")
+    return f"{s[0:8]}-{s[8:12]}-{s[12:16]}-{s[16:20]}-{s[20:32]}"
+
+
 def depth(pid):
     d = 0
     cur = tree[pid]["parent"]
@@ -221,10 +226,34 @@ def rich(segs, in_table=False):
                 piece = f"_{piece}_"
         for d in decos:
             if d[0] == "a":
-                piece = f"[{piece}]({d[1]})"
+                href = resolve_href(d[1])
+                if href:
+                    piece = f"[{piece}]({href})"
                 break
         out.append(piece)
     return "".join(out)
+
+
+_NOTION_ID_RE = re.compile(r"^/?([0-9a-fA-F]{32})")
+
+
+def resolve_href(url):
+    """Return a usable href, or None if the link should be dropped.
+
+    Notion-internal links (relative "/<pageid>#..." or bare 32-hex ids) are
+    mapped to the target page's permalink when we migrated it, otherwise the
+    hyperlink is removed (text is kept). External URLs pass through unchanged.
+    """
+    if not url:
+        return None
+    m = _NOTION_ID_RE.match(url)
+    if url.startswith("/") or (m and not url.lower().startswith("http")):
+        if m:
+            pid = dash(m.group(1))
+            if pid in PAGE_IDS:
+                return permalink(pid)  # drop the #block fragment
+        return None
+    return url
 
 
 def prop_text(v, key="title"):
@@ -308,16 +337,16 @@ def render_block(v, level=0):
     if t == "table":
         return render_table(v)
     if t == "bookmark":
-        link = v.get("properties", {}).get("link", [[""]])[0][0]
-        title = prop_text(v) or link
-        return f"[{title}]({link})" if link else ""
+        link = resolve_href(v.get("properties", {}).get("link", [[""]])[0][0])
+        title = prop_text(v) or link or ""
+        return f"[{title}]({link})" if link else title
     if t == "external_object_instance":
         uri = v.get("format", {}).get("uri", "")
         return f"[{uri}]({uri})" if uri else ""
     if t == "file":
-        src = v.get("properties", {}).get("source", [[""]])[0][0]
-        name = prop_text(v) or src
-        return f"[{name}]({src})" if src else ""
+        src = resolve_href(v.get("properties", {}).get("source", [[""]])[0][0])
+        name = prop_text(v) or src or ""
+        return f"[{name}]({src})" if src else name
     if t == "alias":
         tgt = v.get("format", {}).get("alias_pointer", {}).get("id", "")
         if tgt in PAGE_IDS:
