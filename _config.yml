@@ -1,0 +1,31 @@
+title: Geun's Study
+description: 개발 학습과 기술 정리를 담은 노트
+lang: ko-KR
+
+theme: just-the-docs
+url: https://jasonlee228.github.io
+
+# just-the-docs options
+search_enabled: true
+heading_anchors: true
+color_scheme: light
+
+aux_links:
+  GitHub:
+    - https://github.com/jasonlee228/jasonlee228.github.io
+aux_links_new_tab: true
+
+# Show a "back to top" link and edit metadata off by default
+back_to_top: true
+back_to_top_text: "맨 위로"
+
+# Collapse long category trees in the sidebar by default
+nav_external_links: []
+
+exclude:
+  - tools/
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - LICENSE
+  - vendor/

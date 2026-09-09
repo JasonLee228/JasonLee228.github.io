@@ -1,0 +1,9 @@
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+vendor/
+.bundle/
+
+# Notion migration cache (regenerate with tools/notion_fetch.py)
+tools/cache/
