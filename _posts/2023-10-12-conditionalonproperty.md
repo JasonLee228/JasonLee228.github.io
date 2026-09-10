@@ -1,7 +1,9 @@
 ---
 title: "@ConditionalOnProperty"
 date: 2023-10-12 04:36:58 +0000
-categories: ["Spring-Boot"]
+categories: ["Spring", "활용"]
+tags: ["활용", "spring"]
+permalink: /posts/conditionalonproperty/
 ---
 
 #### ConditionalOnProperty 어노테이션이란?

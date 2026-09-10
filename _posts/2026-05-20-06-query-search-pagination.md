@@ -1,14 +1,16 @@
 ---
 title: "06. Query, Search, Pagination"
 date: 2026-05-20 02:59:25 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
+permalink: /posts/06-query-search-pagination/
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [05. Refresh, Near Real-Time, 검색 일관성](/posts/05-refresh-near-real-time-검색-일관성/)
 >
@@ -577,7 +579,7 @@ BoolQueryBuilder query = QueryBuilders.boolQuery()
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [05. Refresh, Near Real-Time, 검색 일관성](/posts/05-refresh-near-real-time-검색-일관성/)
 >

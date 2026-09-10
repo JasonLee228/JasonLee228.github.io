@@ -1,7 +1,9 @@
 ---
 title: "Spring AOP 를 이용한 캐시 적용"
 date: 2024-03-11 05:16:23 +0000
-categories: ["Spring-Boot"]
+categories: ["Spring", "운영"]
+tags: ["운영", "spring"]
+permalink: /posts/spring-aop-를-이용한-캐시-적용/
 ---
 
 #### 📌 주의 사항

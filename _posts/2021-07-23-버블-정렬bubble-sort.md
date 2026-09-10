@@ -1,7 +1,9 @@
 ---
 title: "버블 정렬(Bubble Sort)"
 date: 2021-07-23 02:43:29 +0000
-categories: ["알고리즘"]
+categories: ["알고리즘", "정렬"]
+tags: ["정렬", "알고리즘"]
+permalink: /posts/버블-정렬bubble-sort/
 ---
 
 **1. 버블 정렬 : ****가장 큰 수를 뒤로!**  

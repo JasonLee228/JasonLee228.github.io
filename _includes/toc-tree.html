@@ -1,0 +1,33 @@
+{%- comment -%}
+  Renders site.data.toc as a collapsible tree.
+  compact=true → tighter list for the sidebar.
+{%- endcomment -%}
+<ul class="toc-tree{% if include.compact %} toc-tree--compact{% endif %}">
+  {%- for prim in site.data.toc -%}
+    <li>
+      <details{% unless include.compact %} open{% endunless %}>
+        <summary><a href="{{ prim.url | relative_url }}">{{ prim.title }}</a></summary>
+        {%- if prim.children -%}
+          <ul>
+            {%- for sec in prim.children -%}
+              <li>
+                {%- if sec.children -%}
+                  <details>
+                    <summary><a href="{{ sec.url | relative_url }}">{{ sec.title }}</a></summary>
+                    <ul>
+                      {%- for post in sec.children -%}
+                        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+                      {%- endfor -%}
+                    </ul>
+                  </details>
+                {%- else -%}
+                  <a href="{{ sec.url | relative_url }}">{{ sec.title }}</a>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </details>
+    </li>
+  {%- endfor -%}
+</ul>

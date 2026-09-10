@@ -1,7 +1,9 @@
 ---
 title: "삽입 정렬(insertion Sort)"
 date: 2021-07-23 02:43:30 +0000
-categories: ["알고리즘"]
+categories: ["알고리즘", "정렬"]
+tags: ["정렬", "알고리즘"]
+permalink: /posts/삽입-정렬insertion-sort/
 ---
 
 **1. 삽입 정렬**  

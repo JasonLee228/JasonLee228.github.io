@@ -1,7 +1,9 @@
 ---
 title: "Test에 Security 적용 시 오류 해결(MYSQL사용 시)"
 date: 2022-02-01 05:50:02 +0000
-categories: ["Spring-Boot"]
+categories: ["Spring", "테스트"]
+tags: ["테스트", "spring", "security"]
+permalink: /posts/test에-security-적용-시-오류-해결mysql사용-시/
 ---
 
 > 💡 springboot.config.auth.CustomOAuth2UserService를 찾을 수 없다고 문제가 뜰 것이다.

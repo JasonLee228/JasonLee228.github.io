@@ -1,8 +1,9 @@
 ---
 title: "TransactionRequiredException"
 date: 2022-08-21 13:51:34 +0000
-categories: ["기타", "SPOTY-PROJECT(종료)"]
-tags: ["API 명세서", "지식창"]
+categories: ["프로젝트", "SPOTY"]
+tags: ["spoty", "프로젝트"]
+permalink: /posts/transactionrequiredexception/
 ---
 
 # Team 테이블 구조

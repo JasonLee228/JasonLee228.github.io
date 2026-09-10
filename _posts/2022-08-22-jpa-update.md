@@ -1,8 +1,9 @@
 ---
 title: "jpa update"
 date: 2022-08-22 12:10:44 +0000
-categories: ["기타", "SPOTY-PROJECT(종료)"]
-tags: ["API 명세서", "지식창"]
+categories: ["프로젝트", "SPOTY"]
+tags: ["spoty", "프로젝트", "jpa"]
+permalink: /posts/jpa-update/
 ---
 
 @Transactional 어노테이션 남발의 문제점인가,,,

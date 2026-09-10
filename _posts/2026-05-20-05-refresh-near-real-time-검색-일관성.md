@@ -1,14 +1,16 @@
 ---
 title: "05. Refresh, Near Real-Time, 검색 일관성"
 date: 2026-05-20 02:58:44 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
+permalink: /posts/05-refresh-near-real-time-검색-일관성/
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [04. Index Alias와 생명주기](/posts/04-index-alias와-생명주기/)
 >
@@ -126,7 +128,7 @@ Refresh는 ES를 데이터베이스처럼 사용할 때 반드시 이해해야 �
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [04. Index Alias와 생명주기](/posts/04-index-alias와-생명주기/)
 >

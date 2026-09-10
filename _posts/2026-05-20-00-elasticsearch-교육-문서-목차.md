@@ -1,14 +1,16 @@
 ---
 title: "00. Elasticsearch 교육 문서 목차"
 date: 2026-05-20 02:58:06 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "기초"]
+tags: ["기초", "elasticsearch"]
+permalink: /posts/00-elasticsearch-교육-문서-목차/
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 다음: [01. RDB 관점에서 Elasticsearch 이해하기](/posts/01-rdb-관점에서-elasticsearch-이해하기/)
 
@@ -97,7 +99,7 @@ Mapping 변경, reindex, stable alias switch, bulk 실패 복구, delete-by-quer
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 다음: [01. RDB 관점에서 Elasticsearch 이해하기](/posts/01-rdb-관점에서-elasticsearch-이해하기/)
 

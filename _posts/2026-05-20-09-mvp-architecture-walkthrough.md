@@ -1,14 +1,16 @@
 ---
 title: "09. MVP Architecture Walkthrough"
 date: 2026-05-20 03:00:01 +0000
-categories: ["Elasticsearch"]
+categories: ["Elasticsearch", "클러스터운영"]
+tags: ["클러스터운영", "elasticsearch"]
+permalink: /posts/09-mvp-architecture-walkthrough/
 ---
 
 > 🧭 
 >
 > **문서 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [08. Elasticsearch를 Database처럼 쓸 때의 제약](/posts/08-elasticsearch를-database처럼-쓸-때의-제약/)
 >
@@ -216,7 +218,7 @@ CompanyService.delete
 >
 > **다음으로 이동**
 >
-> - 상위: [Elasticsearch](/posts/elasticsearch/)
+> - 상위: [Elasticsearch](/categories/기초/)
 >
 > - 이전: [08. Elasticsearch를 Database처럼 쓸 때의 제약](/posts/08-elasticsearch를-database처럼-쓸-때의-제약/)
 >

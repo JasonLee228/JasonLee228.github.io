@@ -1,7 +1,9 @@
 ---
 title: "Spring security - kakao login setting"
 date: 2022-02-02 14:03:33 +0000
-categories: ["Spring-Boot", "스프링부트와 AWS로 혼자 구현하는 웹 서비스"]
+categories: ["Spring", "웹서비스"]
+tags: ["웹서비스", "spring", "security"]
+permalink: /posts/spring-security-kakao-login-setting/
 ---
 
 #application-oauth.properties
