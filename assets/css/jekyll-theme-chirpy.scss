@@ -48,8 +48,16 @@
   --cat-db: #e0b84a;
 }
 
-:root {
+/* same selectors as Chirpy's theme blocks, so these win on specificity + order */
+:root,
+:root[data-bs-theme='light'] {
   @include light-tokens;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-bs-theme]) {
+    @include light-tokens;
+  }
 }
 
 :root[data-bs-theme='dark'] {
