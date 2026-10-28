@@ -1,0 +1,125 @@
+---
+---
+
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+/* ---------- color tokens: category accents + sidebar title ---------- */
+
+@mixin light-tokens {
+  --site-title-color: #1f2328;
+  --site-subtitle-color: #59636e;
+  --cat-default: #6e7781;
+  --cat-spring: #2f8a4e;
+  --cat-java: #c4561b;
+  --cat-es: #0e7c86;
+  --cat-ps: #4a55c8;
+  --cat-algo: #7a4cc2;
+  --cat-git: #8a5a2b;
+  --cat-project: #b2367a;
+  --cat-redis: #c43c3c;
+  --cat-ops: #2f6fd6;
+  --cat-db: #9a7300;
+}
+
+@mixin dark-tokens {
+  --site-title-color: #e6e6e6;
+  --site-subtitle-color: #9a9a9a;
+  --cat-default: #9198a1;
+  --cat-spring: #5cc27f;
+  --cat-java: #f08a4b;
+  --cat-es: #3fc1c9;
+  --cat-ps: #8f98ff;
+  --cat-algo: #b391f0;
+  --cat-git: #d6a06a;
+  --cat-project: #ec7fb9;
+  --cat-redis: #f07a7a;
+  --cat-ops: #74a7ff;
+  --cat-db: #e0b84a;
+}
+
+/* same selectors as Chirpy's theme blocks, so these win on specificity + order */
+:root,
+:root[data-bs-theme='light'] {
+  @include light-tokens;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-bs-theme]) {
+    @include light-tokens;
+  }
+}
+
+:root[data-bs-theme='dark'] {
+  @include dark-tokens;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bs-theme]) {
+    @include dark-tokens;
+  }
+}
+
+/* ---------- Korean line breaking: wrap at word boundaries ---------- */
+
+body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ---------- sidebar title / subtitle ---------- */
+
+#sidebar .site-subtitle {
+  font-style: normal;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- home: colored category label per card ---------- */
+
+#post-list .card-wrapper {
+  --cat: var(--cat-default);
+
+  &[data-cat='Spring'] { --cat: var(--cat-spring); }
+  &[data-cat='Java'] { --cat: var(--cat-java); }
+  &[data-cat='Elasticsearch'] { --cat: var(--cat-es); }
+  &[data-cat='문제풀이'] { --cat: var(--cat-ps); }
+  &[data-cat='알고리즘'] { --cat: var(--cat-algo); }
+  &[data-cat='Git'] { --cat: var(--cat-git); }
+  &[data-cat='프로젝트'] { --cat: var(--cat-project); }
+  &[data-cat='Redis'] { --cat: var(--cat-redis); }
+  &[data-cat='Kubernetes'],
+  &[data-cat='DevOps'] { --cat: var(--cat-ops); }
+  &[data-cat='Database'] { --cat: var(--cat-db); }
+
+  .post-cat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .post-cat-top {
+    color: var(--cat);
+    font-weight: 700;
+  }
+
+  .post-cat-sub {
+    color: var(--text-muted-color);
+
+    &::before {
+      content: '›';
+      margin-right: 0.4rem;
+    }
+  }
+}
