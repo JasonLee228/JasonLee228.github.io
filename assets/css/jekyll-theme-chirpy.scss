@@ -84,7 +84,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* ---------- home: category label per card ---------- */
+/* ---------- home: colored category label per card ---------- */
 
 #post-list .card-wrapper {
   --cat: var(--cat-default);
@@ -100,10 +100,6 @@ body {
   &[data-cat='Kubernetes'],
   &[data-cat='DevOps'] { --cat: var(--cat-ops); }
   &[data-cat='Database'] { --cat: var(--cat-db); }
-
-  .post-preview {
-    box-shadow: inset 3px 0 0 var(--cat), var(--card-shadow);
-  }
 
   .post-cat {
     display: flex;
