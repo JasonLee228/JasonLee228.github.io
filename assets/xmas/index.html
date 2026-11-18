@@ -18,6 +18,8 @@
 (() => {
 "use strict";
 const TAU = Math.PI * 2;
+const MINI = new URLSearchParams(location.search).has("mini");
+if (MINI) document.getElementById("btn").hidden = true;
 const MONO = 'Consolas,Menlo,"DejaVu Sans Mono","Courier New",monospace';
 
 // ---------- rng ----------
@@ -483,7 +485,8 @@ function frame(now){
       ctx.fillText(String.fromCharCode(cc[id]), (id % cols + 0.5)*cw, ((id/cols|0) + 0.5)*ch);
   }
 
-  // HUD
+  // HUD (hidden in ?mini embed: too cramped in the sidebar)
+  if (MINI) { requestAnimationFrame(frame); return; }
   ctx.font = `12px ${MONO}`; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#6b7182";
   const deg = ((ang*180/Math.PI) % 360 + 360) % 360;
