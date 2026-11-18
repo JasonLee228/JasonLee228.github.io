@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASCII Christmas Tree</title>
+<style>
+  html,body{margin:0;height:100%;background:#07090d;overflow:hidden;font-family:Consolas,Menlo,"DejaVu Sans Mono","Courier New",monospace}
+  canvas{display:block;width:100vw;height:100vh;touch-action:pan-y;cursor:grab}
+  #btn{position:fixed;top:10px;left:10px;background:rgba(20,24,32,.7);color:#8a90a0;border:1px solid #2a3040;border-radius:6px;font:12px Consolas,Menlo,monospace;padding:5px 9px;cursor:pointer}
+  #btn:hover{color:#ffc45a}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="btn">↻ restart</button>
+<script>
+(() => {
+"use strict";
+const TAU = Math.PI * 2;
+const MONO = 'Consolas,Menlo,"DejaVu Sans Mono","Courier New",monospace';
+
+// ---------- rng ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand = mulberry32(7);
+const R = () => rand(), U = (a,b) => a + (b-a)*R();
+const N = () => { const u = 1-R(), v = R(); return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v); };
+const clip = (x,a,b) => x < a ? a : x > b ? b : x;
+const easeOut = x => 1 - Math.pow(1-x, 3);
+const easeBack = x => { const c = 1.7; return 1 + (c+1)*Math.pow(x-1,3) + c*Math.pow(x-1,2); };
+
+// ---------- scene constants ----------
+const GROUND = 0, Y0 = 0.16, Y1 = 1.04, YS = Y1 + 0.06;
+const T_GROUND=[0.3,2.2], T_TRUNK=[1.2,2.6], T_GROW=[2.2,10.5], T_GARLAND=[9.5,13.5],
+      T_GIFTS=[13.0,15.0], T_LIGHTS=[12.5,16.5], T_STAR=[15.8,16.6], T_TEXT=[16.8,18.8];
+const OMEGA = 8.88 * Math.PI / 180;           // deg/s, half of the reel's 17.76
+const D = 3.0, PITCH = 0.2, LOOKY = 0.5;
+
+const envelope = y => { const u = clip((y-Y0)/(Y1-Y0),0,1); return 0.46*Math.pow(1-u,1.05) + 0.015; };
+const growTime = y => T_GROW[0] + (T_GROW[1]-T_GROW[0]) * clip((y-GROUND)/(Y1-GROUND),0,1);
+
+const K = {NEEDLE:0,TRUNK:1,GARLAND:2,BULB:3,HALO:4,STAR:5,GIFT:6,RIBBON:7,GROUND:8,SNOW:9};
+const PAL = [[1,.22,.2],[1,.6,.15],[1,.85,.3],[.3,.55,1],[1,.35,.75],[.5,1,.5],[1,1,1]];
+
+// ---------- point cloud ----------
+const P = {x:[],y:[],z:[],nx:[],ny:[],nz:[],r:[],g:[],b:[],t0:[],k:[],ph:[],ci:[],pal:[],ao:[]};
+function add(x,y,z,nx,ny,nz,r,g,b,t0,k,ao=1,pal=-1){
+  const l = Math.hypot(nx,ny,nz) || 1;
+  P.x.push(x);P.y.push(y);P.z.push(z);
+  P.nx.push(nx/l);P.ny.push(ny/l);P.nz.push(nz/l);
+  P.r.push(r);P.g.push(g);P.b.push(b);
+  P.t0.push(t0);P.k.push(k);P.ph.push(R()*TAU);P.ci.push((R()*256)|0);P.pal.push(pal);P.ao.push(ao);
+}
+
+function build(){
+  // needles: whorls of drooping branches, denser and longer at the bottom
+  const WH = 30;
+  for (let i=0;i<WH;i++){
+    const y = Y0 + 0.02 + (Y1 - 0.06 - Y0 - 0.02) * i/(WH-1);
+    const u = (y-Y0)/(Y1-Y0);
+    const Rr = envelope(y) + 0.05;
+    const nb = Math.floor(6 + 12*(1-u));
+    for (let b=0;b<nb;b++){
+      const a = TAU*(b + 0.5*R())/nb + i*0.77;
+      const L = Rr * U(0.85,1.08);
+      const m = Math.floor(30 + 150*L + 20*R());
+      for (let j=0;j<m;j++){
+        const s = Math.sqrt(R());
+        const aa = a + N()*0.11*(1 - 0.5*s);
+        const rr = Math.max(0, L*s + N()*0.014);
+        const yy = Math.max(GROUND+0.03, y - 0.10*L*s*s - 0.015 + N()*0.017);
+        const g = U(0.42,0.8)*(s>0.8?1.12:1);
+        add(Math.cos(aa)*rr, yy, Math.sin(aa)*rr,
+            Math.cos(aa), 0.35 + 0.3*R(), Math.sin(aa),
+            g*U(0.15,0.4), g, g*U(0.25,0.45),
+            growTime(yy) + U(0,0.35), K.NEEDLE, 0.45 + 0.55*s);
+      }
+    }
+  }
+  // trunk with bark stripes
+  const TH = Y0 + 0.1;
+  for (let j=0;j<1400;j++){
+    const y = R()*TH, phi = R()*TAU;
+    const bark = 0.75 + 0.25*Math.sign(Math.sin(phi*30 + y*5));
+    add(Math.cos(phi)*0.055, y, Math.sin(phi)*0.055, Math.cos(phi),0,Math.sin(phi),
+        .42*bark, .27*bark, .15*bark, T_TRUNK[0] + (T_TRUNK[1]-T_TRUNK[0])*y/TH, K.TRUNK);
+  }
+  // tinsel garland: a gold spiral drooping in swags between hanging points
+  const GN = 2200, turns = 3.6;
+  for (let i=0;i<GN;i++){
+    const u = i/(GN-1);
+    const yg = Y0 + 0.15 + (Y1 - Y0 - 0.45)*u;
+    const ag = TAU*turns*u + 0.9;
+    const swag = -0.07*Math.abs(Math.sin(ag*2.5));
+    const rg = envelope(yg) + 0.07;
+    add(Math.cos(ag)*rg + 0.008*N(), yg + swag + 0.008*N(), Math.sin(ag)*rg + 0.008*N(),
+        Math.cos(ag), 0.3, Math.sin(ag), .95, .74, .3,
+        T_GARLAND[0] + u*(T_GARLAND[1]-T_GARLAND[0]), K.GARLAND);
+  }
+  // gifts
+  const GIFTS = [
+    {a:0.35,r:0.54,w:.22,h:.17,d:.2, rot:.3, col:[.86,.12,.14],rib:[1,.8,.3]},
+    {a:2.5, r:0.56,w:.24,h:.14,d:.2, rot:-.4,col:[.2,.35,.95], rib:[.95,.95,1]},
+    {a:3.9, r:0.57,w:.15,h:.12,d:.15,rot:.8, col:[.95,.95,.95],rib:[.9,.15,.2]},
+    {a:5.3, r:0.54,w:.17,h:.21,d:.17,rot:.1, col:[.95,.5,.12], rib:[.25,.45,1]},
+  ];
+  const STEP = 0.016, RW = 0.02;
+  GIFTS.forEach((G,gi) => {
+    const cx = Math.cos(G.a)*G.r, cz = Math.sin(G.a)*G.r, cr = Math.cos(G.rot), sr = Math.sin(G.rot);
+    const t0 = T_GIFTS[0] + gi*0.55;
+    const put = (u,v,s,nu,nv,ns,rib) => {
+      const x = u*cr - s*sr, z = u*sr + s*cr, nx = nu*cr - ns*sr, nz = nu*sr + ns*cr;
+      const c = rib ? G.rib : G.col;
+      add(cx+x, v, cz+z, nx, nv, nz, c[0], c[1], c[2], t0, rib ? K.RIBBON : K.GIFT);
+    };
+    const hw = G.w/2, hd = G.d/2;
+    for (let u=-hw;u<=hw;u+=STEP) for (let s=-hd;s<=hd;s+=STEP)
+      put(u, G.h, s, 0,1,0, Math.abs(u)<RW || Math.abs(s)<RW);
+    for (let v=0;v<=G.h;v+=STEP){
+      for (let s=-hd;s<=hd;s+=STEP){ put( hw,v,s, 1,0,0, Math.abs(s)<RW); put(-hw,v,s,-1,0,0, Math.abs(s)<RW); }
+      for (let u=-hw;u<=hw;u+=STEP){ put(u,v, hd, 0,0,1, Math.abs(u)<RW); put(u,v,-hd, 0,0,-1, Math.abs(u)<RW); }
+    }
+    for (let j=0;j<60;j++){                       // bow
+      const side = j%2 ? 1 : -1, a = R()*TAU;
+      put(side*0.03 + Math.cos(a)*0.022, G.h + 0.02 + Math.sin(a)*0.018, N()*0.006, side,1,0, true);
+    }
+  });
+  // lights: bulbs on the canopy surface, switched on bottom to top
+  const bulbs = [];
+  while (bulbs.length < 170){
+    const y = U(Y0+0.03, Y1-0.08);
+    if (R()*0.48 > envelope(y)) continue;
+    bulbs.push({y, a:R()*TAU, pal: R()<0.9 ? (R()*5)|0 : 6});
+  }
+  bulbs.sort((p,q) => p.y - q.y);
+  bulbs.forEach((B,i) => {
+    const r = envelope(B.y) + 0.055, c = PAL[B.pal];
+    const x = Math.cos(B.a)*r, z = Math.sin(B.a)*r;
+    const t0 = T_LIGHTS[0] + (T_LIGHTS[1]-T_LIGHTS[0])*i/(bulbs.length-1);
+    add(x, B.y, z, Math.cos(B.a), 0.2, Math.sin(B.a), c[0],c[1],c[2], t0, K.BULB, 1, B.pal);
+  });
+  // star (billboard-ish, faces camera)
+  const RO = 0.085, RI = 0.036, poly = [];
+  for (let k=0;k<10;k++){ const a = Math.PI/2 + k*Math.PI/5, rr = k%2 ? RI : RO; poly.push([Math.cos(a)*rr, Math.sin(a)*rr]); }
+  const inside = (x,y) => { let c=false; for (let i=0,j=9;i<10;j=i++){ const [xi,yi]=poly[i],[xj,yj]=poly[j];
+    if ((yi>y)!==(yj>y) && x < (xj-xi)*(y-yi)/(yj-yi)+xi) c=!c; } return c; };
+  let ns = 0;
+  while (ns < 1100){
+    const x = U(-RO,RO), y = U(-RO,RO);
+    if (!inside(x,y)) continue;
+    add(x, YS+y, U(-0.012,0.012), 0,0,-1, 1,.85,.35, T_STAR[0], K.STAR, Math.hypot(x,y)/RO);
+    ns++;
+  }
+  // ground: dotted plane, darker under the tree, fading at the edge
+  const GS = 0.055;
+  for (let x=-2.6;x<=2.6;x+=GS) for (let z=-2.6;z<=2.6;z+=GS){
+    const px = x + N()*GS*0.25, pz = z + N()*GS*0.25, d = Math.hypot(px,pz);
+    if (d > 2.6) continue;
+    const ao = clip((2.6-d)/1.2,0,1) * (0.45 + 0.55*clip((d-0.15)/0.65,0,1)) * U(0.7,1);
+    add(px, GROUND, pz, 0,1,0, .42,.47,.55, T_GROUND[0] + (T_GROUND[1]-T_GROUND[0])*d/2.6, K.GROUND, ao);
+  }
+  // snow / stars
+  for (let j=0;j<700;j++){
+    const a = R()*TAU, r = Math.sqrt(R())*2.3;
+    add(Math.cos(a)*r, U(0,2.4), Math.sin(a)*r, 0,1,0, .82,.87,1, -1, K.SNOW, U(0.02,0.07));
+  }
+}
+build();
+
+const NP = P.x.length;
+const AX=Float32Array.from(P.x),AY=Float32Array.from(P.y),AZ=Float32Array.from(P.z),
+      ANX=Float32Array.from(P.nx),ANY=Float32Array.from(P.ny),ANZ=Float32Array.from(P.nz),
+      CR=Float32Array.from(P.r),CG=Float32Array.from(P.g),CB=Float32Array.from(P.b),
+      T0=Float32Array.from(P.t0),KK=Uint8Array.from(P.k),PH=Float32Array.from(P.ph),
+      CI=Uint8Array.from(P.ci),PA=Int8Array.from(P.pal),AO=Float32Array.from(P.ao);
+const NBULB = P.k.filter(k => k===K.BULB).length;
+
+// ---------- glyph sets ----------
+const NEEDLE_T = [":-~^'", "x*=+v<>", "%#&W@$8X"];
+const GIFT_T = ["=+:", "%xX", "#H&"];
+const TRUNK_T = [":!", "|!", "#H"];
+
+// ---------- colors ----------
+const STYLES = []; for (let i=0;i<4096;i++) STYLES.push(`rgb(${((i>>8)&15)*17},${((i>>4)&15)*17},${(i&15)*17})`);
+const q = v => v <= 0 ? 0 : v >= 1 ? 15 : (v*15 + 0.5) | 0;
+function makeGlow(c){
+  const s = document.createElement("canvas"); s.width = s.height = 64;
+  const g = s.getContext("2d"), gr = g.createRadialGradient(32,32,0,32,32,32);
+  const rgb = `${(c[0]*255)|0},${(c[1]*255)|0},${(c[2]*255)|0}`;
+  gr.addColorStop(0, `rgba(${rgb},0.55)`); gr.addColorStop(0.35, `rgba(${rgb},0.18)`); gr.addColorStop(1, `rgba(${rgb},0)`);
+  g.fillStyle = gr; g.fillRect(0,0,64,64); return s;
+}
+const GLOWS = PAL.map(makeGlow), STARGLOW = makeGlow([1,.8,.35]);
+
+// ---------- canvas / grid ----------
+const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+let W,H,DPR,cols,rows,cw,ch,F,CY,fontPx,n;
+let zbuf,cc,cr,cg,cb,ck,gl,gi,head,next;
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  cols = clip(Math.round(W/(W < 640 ? 5.6 : 7.2)), 60, 160);
+  cw = W/cols; ch = cw*1.6; rows = Math.floor(H/ch);
+  n = cols*rows;
+  zbuf = new Float32Array(n); cc = new Uint16Array(n);
+  cr = new Float32Array(n); cg = new Float32Array(n); cb = new Float32Array(n);
+  ck = new Int8Array(n); gl = new Int8Array(n); gi = new Float32Array(n);
+  head = new Int32Array(4096); next = new Int32Array(n);
+  F = Math.min(W*0.97*D/(W < 640 ? 1.5 : 1.3), H*0.62*D/1.25);
+  CY = H*0.45;
+  fontPx = Math.min(ch*0.95, cw/0.6);
+}
+addEventListener("resize", resize); resize();
+
+// ---------- state / input ----------
+let t = 0, paused = false, rotOff = 0, last = performance.now();
+let down = null;
+cv.addEventListener("pointerdown", e => { down = {x:e.clientX, moved:0}; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e => { if (!down) return; const dx = e.clientX - down.x; down.x = e.clientX; down.moved += Math.abs(dx); rotOff += dx*0.01; });
+cv.addEventListener("pointerup", () => { if (down && down.moved < 6) paused = !paused; down = null; });
+cv.addEventListener("pointercancel", () => { down = null; }); // vertical swipe handed to page scroll (touch-action:pan-y)
+// ---------- fireworks (screen-space background layer) ----------
+const FW_COLORS = [[1,.3,.3],[1,.7,.2],[1,.9,.4],[.4,.7,1],[.8,.4,1],[.4,1,.6],[1,.5,.8],[1,1,1]];
+const FW_GLOWS = FW_COLORS.map(makeGlow);
+let rockets = [], sparks = [], flashes = [], nextLaunch = 1.5;
+function horizonY(){
+  const yy = GROUND - LOOKY, zz = 2.6, cp = Math.cos(PITCH), sp = Math.sin(PITCH);
+  return CY - F*(yy*cp + zz*sp)/(-yy*sp + zz*cp + D);
+}
+function launch(){
+  const y0 = horizonY();
+  const ty = U(H*0.06, Math.min(H*0.38, y0 - H*0.15));
+  rockets.push({x: U(W*0.05, W*0.95), y0, ty, y: y0, age: 0, dur: U(0.9, 1.4),
+                col: (R()*FW_COLORS.length)|0, size: U(0.5, 1.35), type: R() < 0.6 ? 0 : R() < 0.5 ? 1 : 2});
+}
+function explode(rk){
+  const s = rk.size, count = Math.round(40 + 90*s), base = H*0.22*s;
+  const col2 = R() < 0.3 ? (R()*FW_COLORS.length)|0 : rk.col;
+  for (let i=0;i<count;i++){
+    const a = TAU*i/count + N()*0.05;
+    let sp;
+    if (rk.type === 1) sp = base;                         // ring
+    else sp = base*Math.cbrt(R());                        // sphere / willow
+    const willow = rk.type === 2;
+    sparks.push({x: rk.x, y: rk.ty, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp,
+                 life: 0, max: willow ? U(2.2,3.0) : U(1.1,1.9),
+                 col: willow ? 2 : (i%2 ? col2 : rk.col), g: willow ? H*0.18 : H*0.11,
+                 drag: willow ? 2.2 : 1.4});
+  }
+  flashes.push({x: rk.x, y: rk.ty, col: rk.col, age: 0, size: s});
+}
+function updateFireworks(dt){
+  nextLaunch -= dt;
+  if (nextLaunch <= 0){ launch(); if (R() < 0.1) launch(); nextLaunch = U(3.0, 6.0); }
+  for (const rk of rockets){
+    rk.age += dt;
+    const f = clip(rk.age/rk.dur, 0, 1);
+    rk.y = rk.y0 + (rk.ty - rk.y0)*easeOut(f);
+    rk.x += Math.sin(rk.age*9)*0.15;
+    if (f >= 1){ rk.done = true; explode(rk); }
+  }
+  rockets = rockets.filter(r => !r.done);
+  for (const p of sparks){
+    p.life += dt;
+    const k = Math.exp(-p.drag*dt);
+    p.vx *= k; p.vy = p.vy*k + p.g*dt;
+    p.x += p.vx*dt; p.y += p.vy*dt;
+  }
+  sparks = sparks.filter(p => p.life < p.max);
+  for (const f of flashes) f.age += dt;
+  flashes = flashes.filter(f => f.age < 0.5);
+}
+const restart = () => { t = 0; rotOff = 0; paused = false; rockets = []; sparks = []; flashes = []; nextLaunch = 1.5; };
+document.getElementById("btn").addEventListener("click", restart);
+addEventListener("keydown", e => {
+  if (e.code === "Space"){ paused = !paused; e.preventDefault(); }
+  else if (e.key === "r" || e.key === "R") restart();
+});
+
+// ---------- render ----------
+const LX=-0.45, LY=0.55, LZ=-0.7, LL=Math.hypot(LX,LY,LZ), Lx=LX/LL, Ly=LY/LL, Lz=LZ/LL;
+const TEXT = "MERRY CHRISTMAS 2026";
+const textColor = i => i < 5 ? [1,.25,.22] : i < 6 ? [0,0,0] : i < 15 ? ((i%2) ? [.4,1,.45] : [1,.3,.25]) : i < 16 ? [0,0,0] : [1,.8,.3];
+
+function put(id, chr, r, g, b, k){ cc[id]=chr; cr[id]=r; cg[id]=g; cb[id]=b; ck[id]=k; }
+
+function frame(now){
+  const dt = Math.min(0.05, (now - last)/1000); last = now;
+  if (!paused){ t += dt; updateFireworks(dt); }
+
+  zbuf.fill(1e9); ck.fill(-1); gl.fill(-1);
+  const ang = OMEGA*t + rotOff, cR = Math.cos(ang), sR = Math.sin(ang);
+  const cp = Math.cos(PITCH), sp = Math.sin(PITCH);
+  const sa = 0.35*Math.sin(t*0.8), cS = Math.cos(sa), sS = Math.sin(sa);
+  const starAge = t - T_STAR[0], starF = starAge > 0 ? easeBack(clip(starAge/0.8,0,1)) : 0;
+  let lightsOn = 0;
+
+  for (let i=0;i<NP;i++){
+    const k = KK[i], t0 = T0[i];
+    if (t < t0) continue;
+    const age = t - t0;
+    let x = AX[i], y = AY[i], z = AZ[i];
+    if (k <= K.HALO && k !== K.TRUNK){            // needles, garland, bulbs, halos grow outward
+      const f = age < 0.7 ? easeOut(age/0.7) : 1; x *= f; z *= f;
+    } else if (k === K.GIFT || k === K.RIBBON){
+      y *= age < 0.8 ? easeBack(age/0.8) : 1;
+    } else if (k === K.STAR){
+      x *= starF; y = YS + (y-YS)*starF; z *= starF;
+    } else if (k === K.SNOW){
+      y = -0.4 + ((y - AO[i]*t) % 2.6 + 2.6) % 2.6;
+      x += 0.04*Math.sin(t*0.7 + PH[i]);
+    }
+    if (k === K.BULB) lightsOn++;
+
+    let xr, zr, nxr = 0, nzr = 0;
+    if (k === K.STAR){ xr = x*cS - z*sS; zr = x*sS + z*cS; }
+    else { xr = x*cR - z*sR; zr = x*sR + z*cR; nxr = ANX[i]*cR - ANZ[i]*sR; nzr = ANX[i]*sR + ANZ[i]*cR; }
+    const yy = y - LOOKY;
+    const yc = yy*cp + zr*sp, zc = -yy*sp + zr*cp + D;
+    if (zc < 0.3) continue;
+    const col = ((W/2 + F*xr/zc)/cw) | 0, row = ((CY - F*yc/zc)/ch) | 0;
+    if (col < 0 || col >= cols || row < 0 || row >= rows) continue;
+    const id = row*cols + col;
+    if (zc >= zbuf[id]) continue;
+    zbuf[id] = zc;
+
+    const fog = clip(1 - (zc - (D-0.6))*0.3, 0.45, 1);
+    const diff = Math.max(0, nxr*Lx + ANY[i]*Ly + nzr*Lz);
+    const ci = CI[i];
+    let b, s;
+    switch (k){
+      case K.NEEDLE: {
+        b = AO[i]*(0.22 + 0.9*diff + 0.15*Math.max(0,-nzr)) * fog;
+        const pop = age < 0.4 ? 1 + 0.8*(1 - age/0.4) : 1;
+        const T = NEEDLE_T[b < 0.33 ? 0 : b < 0.62 ? 1 : 2];
+        put(id, T.charCodeAt(ci % T.length), CR[i]*b*pop, CG[i]*b*pop, CB[i]*b*pop, k); break;
+      }
+      case K.TRUNK: {
+        b = (0.35 + 0.8*diff)*fog; const T = TRUNK_T[b < 0.4 ? 0 : b < 0.7 ? 1 : 2];
+        put(id, T.charCodeAt(ci % T.length), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+      case K.GARLAND: {
+        s = Math.pow(0.5 + 0.5*Math.sin(t*5 + PH[i]), 12);
+        b = (0.55 + 0.4*diff)*fog + 0.7*s;
+        put(id, (s > 0.5 ? "*" : b > 0.75 ? "=" : "~").charCodeAt(0), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+      case K.BULB: {
+        b = (0.65 + 0.35*Math.sin(t*2.2 + PH[i])) * (1 + 2*Math.exp(-age*5));
+        put(id, (b > 0.8 ? 64 : 79), CR[i]*b, CG[i]*b, CB[i]*b, k);
+        gl[id] = PA[i]; gi[id] = Math.min(1.6, b); break;
+      }
+      case K.HALO: {
+        b = 0.55*(0.65 + 0.35*Math.sin(t*2.2 + PH[i]))*fog;
+        put(id, "*+.".charCodeAt(ci % 3), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+      case K.STAR: {
+        b = 1.05 + 0.25*Math.sin(t*3);
+        const a = AO[i];
+        put(id, (a < 0.3 ? "@" : a < 0.6 ? "#" : "*").charCodeAt(0), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+      case K.GIFT: case K.RIBBON: {
+        b = (0.35 + 0.75*diff)*fog;
+        if (k === K.RIBBON) put(id, (b > 0.6 ? "@" : "#").charCodeAt(0), CR[i]*(b+0.15), CG[i]*(b+0.15), CB[i]*(b+0.15), k);
+        else { const T = GIFT_T[b < 0.45 ? 0 : b < 0.75 ? 1 : 2]; put(id, T.charCodeAt(ci % T.length), CR[i]*b, CG[i]*b, CB[i]*b, k); }
+        break;
+      }
+      case K.GROUND: {
+        b = AO[i]*clip(age/1.0, 0, 1)*fog*0.85;
+        put(id, (ci % 5 === 0 ? 45 : 46), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+      case K.SNOW: {
+        b = clip(1.25 - (zc - 1.5)*0.22, 0.3, 1) * (0.75 + 0.25*Math.sin(t*3 + PH[i]));
+        put(id, (zc < 3.2 ? (ci % 7 === 0 ? 42 : 43) : (ci % 3 ? 46 : 43)), CR[i]*b, CG[i]*b, CB[i]*b, k); break;
+      }
+    }
+  }
+
+  // fireworks: background only (empty or snow cells)
+  const fwPut = (x, y, chr, c, b) => {
+    const col = (x/cw)|0, row = (y/ch)|0;
+    if (col < 0 || col >= cols || row < 0 || row >= rows) return;
+    const id = row*cols + col;
+    if (ck[id] !== -1 && ck[id] !== K.SNOW && ck[id] !== 22) return;
+    if (ck[id] === 22 && cr[id] + cg[id] + cb[id] > (c[0]+c[1]+c[2])*b) return;
+    put(id, chr, c[0]*b, c[1]*b, c[2]*b, 22);
+  };
+  for (const rk of rockets){
+    const c = [1,.85,.6];
+    fwPut(rk.x, rk.y, 124, c, 1);
+    for (let j=1;j<5;j++) fwPut(rk.x, rk.y + j*ch, 46, c, 0.7 - j*0.13);
+  }
+  for (const p of sparks){
+    const f = p.life/p.max, c = FW_COLORS[p.col];
+    let b = f < 0.1 ? 1.3 : 1.15*(1 - f);
+    if (f > 0.65) b *= 0.5 + 0.5*Math.sin(p.life*40 + p.x);       // crackle at the end
+    const chr = f < 0.3 ? 42 : f < 0.65 ? 43 : 46;
+    fwPut(p.x, p.y, chr, c, b);
+    fwPut(p.x - p.vx*0.06, p.y - p.vy*0.06, 46, c, b*0.45);       // short trail
+  }
+
+  // star rays + glow position
+  let starPX = -1, starPY = -1;
+  if (starF > 0){
+    const yy = YS - LOOKY, yc = yy*cp, zc = -yy*sp + D;
+    starPX = W/2; starPY = CY - F*yc/zc;
+    const scol = (starPX/cw)|0, srow = (starPY/ch)|0;
+    const dirs = [[0,-1,"|"],[-1,-1,"\\"],[1,-1,"/"],[-1,0,"-"],[1,0,"-"],[-2,-1,"\\"],[2,-1,"/"]];
+    const pulse = 0.5 + 0.5*Math.sin(t*2.5);
+    dirs.forEach(([dx,dy,c],di) => {
+      const len = Math.round((3 + 3*starF + 2*Math.sin(t*2 + di)) * (dy === 0 ? 1.6 : 1));
+      for (let s=3; s<3+len; s++){
+        const cx = scol + dx*s, cy = srow + dy*s;
+        if (cx < 0 || cx >= cols || cy < 0 || cy >= rows) break;
+        const id = cy*cols + cx;
+        if (ck[id] !== -1 && ck[id] !== K.SNOW && ck[id] !== K.GROUND) continue;
+        const fade = (1 - (s-3)/len) * (0.35 + 0.35*pulse) * starF;
+        put(id, c.charCodeAt(0), fade, .8*fade, .35*fade, 20);
+      }
+    });
+  }
+
+  // "MERRY CHRISTMAS 2026"
+  const shown = Math.floor(clip((t - T_TEXT[0])/(T_TEXT[1]-T_TEXT[0]),0,1)*TEXT.length);
+  if (shown > 0){
+    const spaced = cols >= TEXT.length*2 + 4;
+    const yy = GROUND - LOOKY, zz = -0.95, yc = yy*cp + zz*sp, zc = -yy*sp + zz*cp + D;
+    const trow = Math.min(rows - 6, ((CY - F*yc/zc)/ch | 0) + 1);
+    const span = spaced ? TEXT.length*2 - 1 : TEXT.length;
+    const c0 = ((cols - span)/2) | 0;
+    for (let i=0;i<shown;i++){
+      if (TEXT[i] === " ") continue;
+      const id = trow*cols + c0 + (spaced ? i*2 : i);
+      const c = textColor(i), b = 0.75 + 0.25*Math.sin(t*4 - i*0.5);
+      put(id, TEXT.charCodeAt(i), c[0]*b, c[1]*b, c[2]*b, 21);
+    }
+  }
+
+  // ---- draw ----
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.fillStyle = "#07090d"; ctx.fillRect(0,0,W,H);
+  const lf = lightsOn/NBULB;
+  if (lf > 0){
+    const gx = W/2, gy = CY - F*0.05/D, gr = ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(W,H)*0.55);
+    gr.addColorStop(0, `rgba(255,170,80,${0.09*lf})`); gr.addColorStop(1, "rgba(255,170,80,0)");
+    ctx.fillStyle = gr; ctx.fillRect(0,0,W,H);
+  }
+
+  // glows
+  ctx.globalCompositeOperation = "lighter";
+  const gs = cw*4.2;
+  for (let id=0; id<n; id++){
+    if (gl[id] < 0) continue;
+    const s = gs*gi[id], x = (id % cols + 0.5)*cw, y = ((id/cols|0) + 0.5)*ch;
+    ctx.drawImage(GLOWS[gl[id]], x - s/2, y - s/2, s, s);
+  }
+  for (const f of flashes){
+    const s = cw*30*f.size*(1 - f.age/0.5);
+    ctx.drawImage(FW_GLOWS[f.col], f.x - s/2, f.y - s/2, s, s);
+  }
+  if (starF > 0){
+    const s = cw*(16 + 3*Math.sin(t*3))*starF;
+    ctx.drawImage(STARGLOW, starPX - s/2, starPY - s/2, s, s);
+  }
+  ctx.globalCompositeOperation = "source-over";
+
+  // glyphs, batched by quantized color
+  head.fill(-1);
+  const used = [];
+  let letters = 0;
+  for (let id=0; id<n; id++){
+    if (ck[id] < 0) continue;
+    letters++;
+    const key = (q(cr[id])<<8) | (q(cg[id])<<4) | q(cb[id]);
+    if (key === 0) continue;
+    if (head[key] < 0) used.push(key);
+    next[id] = head[key]; head[key] = id;
+  }
+  ctx.font = `${fontPx}px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const key of used){
+    ctx.fillStyle = STYLES[key];
+    for (let id = head[key]; id >= 0; id = next[id])
+      ctx.fillText(String.fromCharCode(cc[id]), (id % cols + 0.5)*cw, ((id/cols|0) + 0.5)*ch);
+  }
+
+  // HUD
+  ctx.font = `12px ${MONO}`; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#6b7182";
+  const deg = ((ang*180/Math.PI) % 360 + 360) % 360;
+  ctx.fillText("@ascii.xmas", 12, H - 52);
+  ctx.fillStyle = "#4d5262";
+  ctx.fillText(`rotation ${deg.toFixed(2).padStart(6,"0")}°    lights ${lightsOn}`, 12, H - 34);
+  ctx.fillText(`letters ${letters.toLocaleString("en-US")}`, 12, H - 16);
+  ctx.textAlign = "right";
+  ctx.fillStyle = "#ffc45a";
+  ctx.fillText(`${paused ? "❚❚ paused · " : "● "}t ${t.toFixed(2).padStart(5,"0")}s`, W - 12, 22);
+  ctx.fillStyle = "#3d4250";
+  if (W >= 640) ctx.fillText("tap: pause · drag: rotate · R: restart", W - 12, H - 16);
+  else ctx.fillText("tap: pause · drag: rotate", W - 12, 40);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

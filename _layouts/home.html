@@ -47,6 +47,17 @@ layout: default
   {% endfor %}
 {% endif %}
 
+{% if paginator.page == 1 %}
+  <!-- Seasonal: ASCII Christmas tree (remove this block after winter) -->
+  <iframe
+    src="{{ '/assets/xmas/index.html' | relative_url }}"
+    title="ASCII Christmas Tree"
+    loading="lazy"
+    class="mb-4"
+    style="width:100%;height:min(80vh,720px);border:0;border-radius:8px;display:block"
+  ></iframe>
+{% endif %}
+
 <div id="post-list" class="flex-grow-1 px-xl-1">
   {% for post in posts %}
     <article class="card-wrapper card" data-cat="{{ post.categories[0] }}">
